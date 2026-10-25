@@ -1,0 +1,103 @@
+#include <stdio.h>
+
+int main()
+{
+    FILE *in, *out;
+    int n, W;
+    int wt[100], val[100];
+    int dp[101][101];
+    int i, w, test = 1;
+
+    in = fopen("input.txt", "r");
+    out = fopen("result.txt", "w");
+
+    if (in == NULL)
+    {
+        printf("input.txt not found!\n");
+        return 1;
+    }
+
+    if (out == NULL)
+    {
+        printf("result.txt cannot be created!\n");
+        return 1;
+    }
+
+    while (fscanf(in, "%d %d", &n, &W) == 2)
+    {
+    
+        for (i = 0; i < n; i++)
+        {
+            fscanf(in, "%d %d", &wt[i], &val[i]);
+        }
+
+        
+        for (w = 0; w <= W; w++)
+        {
+            dp[0][w] = 0;
+        }
+
+        printf("\n============================\n");
+        printf("Test Case %d\n", test);
+        printf("============================\n");
+
+       
+        for (i = 1; i <= n; i++)
+        {
+            for (w = 0; w <= W; w++)
+            {
+                if (wt[i - 1] <= w)
+                {
+                    if (dp[i - 1][w] >
+                        val[i - 1] + dp[i - 1][w - wt[i - 1]])
+                    {
+                        dp[i][w] = dp[i - 1][w];
+                    }
+                    else
+                    {
+                        dp[i][w] =
+                            val[i - 1] +
+                            dp[i - 1][w - wt[i - 1]];
+                    }
+                }
+                else
+                {
+                    dp[i][w] = dp[i - 1][w];
+                }
+            }
+
+            printf("\nAfter Item %d:\n", i);
+
+            for (w = 0; w <= W; w++)
+            {
+                printf("%d ", dp[i][w]);
+            }
+
+            printf("\n");
+        }
+
+       
+        printf("\nMaximum Value = %d\n", dp[n][W]);
+
+      
+        
+        fprintf(out, "#Test %d\n", test);
+        fprintf(out, "%d %d\n", n, W);
+
+        for (i = 0; i < n; i++)
+        {
+            fprintf(out, "%d %d\n", wt[i], val[i]);
+        }
+
+        fprintf(out, "Test result: %d\n\n", dp[n][W]);
+
+        test++;
+    }
+
+    fclose(in);
+    fclose(out);
+
+    printf("\nAll results saved in result.txt\n");
+
+    return 0;
+}
